@@ -1,0 +1,6 @@
+@BitRaceAPI_HostAddress = http://localhost:5145
+
+GET {{BitRaceAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
