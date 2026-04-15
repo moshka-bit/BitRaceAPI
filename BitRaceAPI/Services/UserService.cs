@@ -10,6 +10,7 @@ namespace BitRaceAPI.Services;
 public class UserService : IUserService
 {
     private readonly ContextDb _context;
+
     public UserService(ContextDb context)
     {
         _context = context;
@@ -25,7 +26,7 @@ public class UserService : IUserService
                 message = "Имя не может быть пустым"
             });
         }
-        
+
         if (string.IsNullOrEmpty(registringUser.Email))
         {
             return new BadRequestObjectResult(new
@@ -34,7 +35,7 @@ public class UserService : IUserService
                 message = "Почта не может быть пустая"
             });
         }
-        
+
         if (string.IsNullOrEmpty(registringUser.Password))
         {
             return new BadRequestObjectResult(new
@@ -43,8 +44,9 @@ public class UserService : IUserService
                 message = "Пароль не может быть пустым"
             });
         }
-        
-        var theSameEmail = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == registringUser.Email.ToLower());
+
+        var theSameEmail =
+            await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == registringUser.Email.ToLower());
 
         if (theSameEmail != null)
         {
@@ -54,28 +56,28 @@ public class UserService : IUserService
                 message = "Пользователь с таким login уже существует"
             });
         }
-        
+
         var user = new User()
         {
             Name = registringUser.Name,
             Email = registringUser.Email,
-            Password =  registringUser.Password,
+            Password = registringUser.Password,
             Money = 0,
             CarSkinId = 1 // автоматически экипирован первый скин
         };
-        
+
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
-        
+
         var userCarSkin = new User_CarSkin()
         {
             UserId = user.Id,
             CarSkinId = 1 // даём стандартный скин
         };
-        
+
         await _context.User_CarSkins.AddAsync(userCarSkin);
         await _context.SaveChangesAsync();
-        
+
         return new OkObjectResult(new
         {
             status = true
@@ -84,8 +86,9 @@ public class UserService : IUserService
 
     public async Task<IActionResult> AuthUserAsync(authUser authUser)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == authUser.Email && u.Password == authUser.Password);
-        
+        var user = await _context.Users.FirstOrDefaultAsync(u =>
+            u.Email == authUser.Email && u.Password == authUser.Password);
+
         if (user == null)
         {
             return new NotFoundObjectResult(new
@@ -93,8 +96,10 @@ public class UserService : IUserService
                 status = false,
                 message = "Нет такого пользователя"
             });
-        };
-        
+        }
+
+        ;
+
         return new OkObjectResult(new
         {
             userId = user.Id,
@@ -105,7 +110,7 @@ public class UserService : IUserService
     public async Task<IActionResult> GetScoresByLevels(int userId)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-        
+
         if (user == null)
         {
             return new NotFoundObjectResult(new
@@ -117,10 +122,11 @@ public class UserService : IUserService
 
         var data = await _context.User_Levels
             .Where(d => d.UserId == userId)
-            .Select(d => new { d.LevelId, d.Record})
+            .Select(d => new { d.LevelId, d.Record })
             .ToListAsync();
-        
-        return new OkObjectResult(new {
+
+        return new OkObjectResult(new
+        {
             status = true,
             data = data
         });
@@ -129,7 +135,7 @@ public class UserService : IUserService
     public async Task<IActionResult> PutScore(int userId, int levelId, int score)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-        
+
         if (user == null)
         {
             return new NotFoundObjectResult(new
@@ -138,9 +144,9 @@ public class UserService : IUserService
                 message = "Нет такого пользователя с таким id"
             });
         }
-        
+
         var level = await _context.Levels.FirstOrDefaultAsync(u => u.Id == levelId);
-        
+
         if (level == null)
         {
             return new NotFoundObjectResult(new
@@ -150,13 +156,15 @@ public class UserService : IUserService
             });
         }
 
-        var userLevel = await _context.User_Levels.FirstOrDefaultAsync(u_l => u_l.UserId == userId && u_l.LevelId == levelId);
-        
+        var userLevel =
+            await _context.User_Levels.FirstOrDefaultAsync(u_l => u_l.UserId == userId && u_l.LevelId == levelId);
+
         userLevel.Record = score;
 
         await _context.SaveChangesAsync();
-        
-        return new OkObjectResult(new {
+
+        return new OkObjectResult(new
+        {
             status = true
         });
     }
@@ -202,9 +210,9 @@ public class UserService : IUserService
                 message = "Сумма не может быть отрицательной"
             });
         }
-        
+
         user.Money += money;
-        
+
         await _context.SaveChangesAsync();
 
         return new OkObjectResult(new
@@ -226,12 +234,13 @@ public class UserService : IUserService
             });
         }
 
-        var usersSkins = await _context.User_CarSkins.Where(uB => uB.UserId == user.Id).Select(uB => uB.CarSkinId).ToListAsync();
-        
+        var usersSkins = await _context.User_CarSkins.Where(uB => uB.UserId == user.Id).Select(uB => uB.CarSkinId)
+            .ToListAsync();
+
         return new OkObjectResult(new
         {
             status = true,
-            data = new {skins = usersSkins},
+            data = new { skins = usersSkins },
             equippedSkin = user.CarSkinId
         });
     }
@@ -248,9 +257,9 @@ public class UserService : IUserService
                 message = "Нет такого пользователя с таким id"
             });
         }
-        
+
         var skin = await _context.CarSkins.FirstOrDefaultAsync(s => s.Id == skinId);
-        
+
         if (skin == null)
         {
             return new NotFoundObjectResult(new
@@ -268,8 +277,9 @@ public class UserService : IUserService
                 message = "Недостаточно денежных средств для покупки скина"
             });
         }
-        
-        var boughtSkin = await _context.User_CarSkins.FirstOrDefaultAsync(u => u.UserId == user.Id && u.CarSkinId == skin.Id);
+
+        var boughtSkin =
+            await _context.User_CarSkins.FirstOrDefaultAsync(u => u.UserId == user.Id && u.CarSkinId == skin.Id);
 
         if (boughtSkin != null)
         {
@@ -279,18 +289,18 @@ public class UserService : IUserService
                 message = "Этот скин уже куплен"
             });
         }
-        
+
         user.Money -= skin.Price;
-        
+
         var userBallSkin = new User_CarSkin()
         {
             UserId = user.Id,
             CarSkinId = skin.Id
         };
-        
+
         await _context.User_CarSkins.AddAsync(userBallSkin);
         await _context.SaveChangesAsync();
-        
+
         return new OkObjectResult(new
         {
             status = true
@@ -308,7 +318,7 @@ public class UserService : IUserService
                 message = "Нет такого пользователя с таким id"
             });
         }
-        
+
         var skin = await _context.CarSkins.FirstOrDefaultAsync(s => s.Id == skinId);
         if (skin == null)
         {
@@ -320,11 +330,33 @@ public class UserService : IUserService
         }
 
         user.CarSkinId = skinId;
-        
+
         await _context.SaveChangesAsync();
-        
-        return new OkObjectResult(new {
+
+        return new OkObjectResult(new
+        {
             status = true
+        });
+    }
+
+    public async Task<IActionResult> GetTop10Records()
+    {
+        var topUsers = await _context.User_Levels
+            .Include(ul => ul.User)
+            .GroupBy(ul => ul.UserId)
+            .Select(g => new
+            {
+                userName = g.First().User.Name,
+                totalScore = g.Sum(ul => ul.Record)
+            })
+            .OrderByDescending(u => u.totalScore)
+            .Take(10)
+            .ToListAsync();
+
+        return new OkObjectResult(new
+        {
+            status = true,
+            data = topUsers
         });
     }
 }

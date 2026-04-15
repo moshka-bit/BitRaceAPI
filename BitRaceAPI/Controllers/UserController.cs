@@ -73,4 +73,11 @@ public class UserController
     {
         return await _userService.EquipSkin(userId, skinId);
     }
+    
+    [HttpGet]
+    [Route("GetTop10Records")]
+    public async Task<IActionResult> GetTop10Records()
+    {
+        return await _userService.GetTop10Records();
+    }
 }

@@ -23,4 +23,6 @@ public interface IUserService
     Task<IActionResult> BuySkin(int userId, int skinId);
     // экипировка скина
     Task<IActionResult> EquipSkin(int userId, int skinId);
+    // топ 10 рекордов
+    Task<IActionResult> GetTop10Records();
 }
