@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BitRaceAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+886b530d21acd073ddceb23fcd8401592cec2aa0")]
 [assembly: System.Reflection.AssemblyProductAttribute("BitRaceAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BitRaceAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

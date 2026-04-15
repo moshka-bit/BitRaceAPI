@@ -25,4 +25,52 @@ public class UserController
     {
         return await _userService.AuthUserAsync(authUser);
     }
+    [HttpGet]
+    [Route("GetScoresByLevels")]
+    public async Task<IActionResult> GetScoresByLevels([FromQuery]int userId)
+    {
+        return await _userService.GetScoresByLevels(userId);
+    }
+    
+    [HttpPut]
+    [Route("PutScore")]
+    public async Task<IActionResult> PutScore([FromQuery]int userId, [FromQuery]int levelId, [FromQuery]int score)
+    {
+        return await _userService.PutScore(userId,  levelId, score);
+    }
+    
+    [HttpGet]
+    [Route("GetMoneyByUserId")]
+    public async Task<IActionResult> GetMoneyByUserId([FromQuery] int userId)
+    {
+        return await _userService.GetMoneyByUserId(userId);
+    }
+
+    [HttpPost]
+    [Route("AddMoneyToUser")]
+    public async Task<IActionResult> AddMoneyToUser([FromQuery] int userId, [FromQuery] int money)
+    {
+        return await _userService.AddMoneyToUser(userId, money);
+    }
+
+    [HttpGet]
+    [Route("GetAllSkinsAndEquippedByUserId")]
+    public async Task<IActionResult> GetAllSkinsAndEquippedByUserId([FromQuery] int userId)
+    {
+        return await _userService.GetAllSkinsAndEquippedByUserId(userId);
+    }
+
+    [HttpPost]
+    [Route("BuySkin")]
+    public async Task<IActionResult> BuySkin([FromQuery] int userId, [FromQuery] int skinId)
+    {
+        return await _userService.BuySkin(userId, skinId);
+    }
+
+    [HttpPost]
+    [Route("EquipSkin")]
+    public async Task<IActionResult> EquipSkin([FromQuery] int userId, [FromQuery] int skinId)
+    {
+        return await _userService.EquipSkin(userId, skinId);
+    }
 }

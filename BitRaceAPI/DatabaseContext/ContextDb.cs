@@ -12,4 +12,8 @@ public class ContextDb: DbContext
     }
     
     public DbSet<User> Users { get; set; }
+    public DbSet<Level> Levels { get; set; }
+    public DbSet<User_Level>  User_Levels { get; set; }
+    public DbSet<CarSkin> CarSkins { get; set; }
+    public DbSet<User_CarSkin>  User_CarSkins { get; set; }
 }

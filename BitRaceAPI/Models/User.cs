@@ -10,4 +10,11 @@ public class User
     public string Name { get; set; }
     public string Email { get; set; }
     public string Password { get; set; }
+    
+    public int Money { get; set; }
+    
+    [ForeignKey("CarSkin")]
+    
+    public int? CarSkinId { get; set; }
+    public CarSkin? CarSkin { get; set; }
 }

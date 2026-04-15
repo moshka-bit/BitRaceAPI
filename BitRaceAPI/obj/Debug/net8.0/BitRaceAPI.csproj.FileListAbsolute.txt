@@ -103,3 +103,4 @@
 /Users/user/RiderProjects/BitRaceAPI/BitRaceAPI/obj/Debug/net8.0/BitRaceAPI.pdb
 /Users/user/RiderProjects/BitRaceAPI/BitRaceAPI/obj/Debug/net8.0/BitRaceAPI.genruntimeconfig.cache
 /Users/user/RiderProjects/BitRaceAPI/BitRaceAPI/obj/Debug/net8.0/ref/BitRaceAPI.dll
+/Users/user/RiderProjects/BitRaceAPI/BitRaceAPI/obj/Debug/net8.0/BitRaceAPI.sourcelink.json

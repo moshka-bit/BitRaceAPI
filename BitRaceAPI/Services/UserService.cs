@@ -60,9 +60,20 @@ public class UserService : IUserService
             Name = registringUser.Name,
             Email = registringUser.Email,
             Password =  registringUser.Password,
+            Money = 0,
+            CarSkinId = 1 // автоматически экипирован первый скин
         };
         
         await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+        
+        var userCarSkin = new User_CarSkin()
+        {
+            UserId = user.Id,
+            CarSkinId = 1 // даём стандартный скин
+        };
+        
+        await _context.User_CarSkins.AddAsync(userCarSkin);
         await _context.SaveChangesAsync();
         
         return new OkObjectResult(new
@@ -87,6 +98,232 @@ public class UserService : IUserService
         return new OkObjectResult(new
         {
             userId = user.Id,
+            status = true
+        });
+    }
+
+    public async Task<IActionResult> GetScoresByLevels(int userId)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        
+        if (user == null)
+        {
+            return new NotFoundObjectResult(new
+            {
+                status = false,
+                message = "Нет такого пользователя с таким id"
+            });
+        }
+
+        var data = await _context.User_Levels
+            .Where(d => d.UserId == userId)
+            .Select(d => new { d.LevelId, d.Record})
+            .ToListAsync();
+        
+        return new OkObjectResult(new {
+            status = true,
+            data = data
+        });
+    }
+
+    public async Task<IActionResult> PutScore(int userId, int levelId, int score)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        
+        if (user == null)
+        {
+            return new NotFoundObjectResult(new
+            {
+                status = false,
+                message = "Нет такого пользователя с таким id"
+            });
+        }
+        
+        var level = await _context.Levels.FirstOrDefaultAsync(u => u.Id == levelId);
+        
+        if (level == null)
+        {
+            return new NotFoundObjectResult(new
+            {
+                status = false,
+                message = "Нет такого уровня с таким id"
+            });
+        }
+
+        var userLevel = await _context.User_Levels.FirstOrDefaultAsync(u_l => u_l.UserId == userId && u_l.LevelId == levelId);
+        
+        userLevel.Record = score;
+
+        await _context.SaveChangesAsync();
+        
+        return new OkObjectResult(new {
+            status = true
+        });
+    }
+
+    public async Task<IActionResult> GetMoneyByUserId(int userId)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+        {
+            return new NotFoundObjectResult(new
+            {
+                status = false,
+                message = "Нет такого пользователя с таким id"
+            });
+        }
+
+        return new OkObjectResult(new
+        {
+            status = true,
+            money = user.Money
+        });
+    }
+
+    public async Task<IActionResult> AddMoneyToUser(int userId, int money)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+        {
+            return new NotFoundObjectResult(new
+            {
+                status = false,
+                message = "Нет такого пользователя с таким id"
+            });
+        }
+
+        if (money < 0)
+        {
+            return new BadRequestObjectResult(new
+            {
+                status = false,
+                message = "Сумма не может быть отрицательной"
+            });
+        }
+        
+        user.Money += money;
+        
+        await _context.SaveChangesAsync();
+
+        return new OkObjectResult(new
+        {
+            status = true
+        });
+    }
+
+    public async Task<IActionResult> GetAllSkinsAndEquippedByUserId(int userId)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+        {
+            return new NotFoundObjectResult(new
+            {
+                status = false,
+                message = "Нет такого пользователя с таким id"
+            });
+        }
+
+        var usersSkins = await _context.User_CarSkins.Where(uB => uB.UserId == user.Id).Select(uB => uB.CarSkinId).ToListAsync();
+        
+        return new OkObjectResult(new
+        {
+            status = true,
+            data = new {skins = usersSkins},
+            equippedSkin = user.CarSkinId
+        });
+    }
+
+    public async Task<IActionResult> BuySkin(int userId, int skinId)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+        {
+            return new NotFoundObjectResult(new
+            {
+                status = false,
+                message = "Нет такого пользователя с таким id"
+            });
+        }
+        
+        var skin = await _context.CarSkins.FirstOrDefaultAsync(s => s.Id == skinId);
+        
+        if (skin == null)
+        {
+            return new NotFoundObjectResult(new
+            {
+                status = false,
+                message = "Нет такого скина с таким id"
+            });
+        }
+
+        if (user.Money < skin.Price)
+        {
+            return new BadRequestObjectResult(new
+            {
+                status = false,
+                message = "Недостаточно денежных средств для покупки скина"
+            });
+        }
+        
+        var boughtSkin = await _context.User_CarSkins.FirstOrDefaultAsync(u => u.UserId == user.Id && u.CarSkinId == skin.Id);
+
+        if (boughtSkin != null)
+        {
+            return new BadRequestObjectResult(new
+            {
+                status = false,
+                message = "Этот скин уже куплен"
+            });
+        }
+        
+        user.Money -= skin.Price;
+        
+        var userBallSkin = new User_CarSkin()
+        {
+            UserId = user.Id,
+            CarSkinId = skin.Id
+        };
+        
+        await _context.User_CarSkins.AddAsync(userBallSkin);
+        await _context.SaveChangesAsync();
+        
+        return new OkObjectResult(new
+        {
+            status = true
+        });
+    }
+
+    public async Task<IActionResult> EquipSkin(int userId, int skinId)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+        {
+            return new NotFoundObjectResult(new
+            {
+                status = false,
+                message = "Нет такого пользователя с таким id"
+            });
+        }
+        
+        var skin = await _context.CarSkins.FirstOrDefaultAsync(s => s.Id == skinId);
+        if (skin == null)
+        {
+            return new NotFoundObjectResult(new
+            {
+                status = false,
+                message = "Нет такого скина с таким id"
+            });
+        }
+
+        user.CarSkinId = skinId;
+        
+        await _context.SaveChangesAsync();
+        
+        return new OkObjectResult(new {
             status = true
         });
     }
