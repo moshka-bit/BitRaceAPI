@@ -104,3 +104,8 @@
 /Users/user/RiderProjects/BitRaceAPI/BitRaceAPI/obj/Debug/net8.0/BitRaceAPI.genruntimeconfig.cache
 /Users/user/RiderProjects/BitRaceAPI/BitRaceAPI/obj/Debug/net8.0/ref/BitRaceAPI.dll
 /Users/user/RiderProjects/BitRaceAPI/BitRaceAPI/obj/Debug/net8.0/BitRaceAPI.sourcelink.json
+/Users/user/RiderProjects/BitRaceAPI/BitRaceAPI/bin/Debug/net8.0/Microsoft.IdentityModel.Abstractions.dll
+/Users/user/RiderProjects/BitRaceAPI/BitRaceAPI/bin/Debug/net8.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/Users/user/RiderProjects/BitRaceAPI/BitRaceAPI/bin/Debug/net8.0/Microsoft.IdentityModel.Logging.dll
+/Users/user/RiderProjects/BitRaceAPI/BitRaceAPI/bin/Debug/net8.0/Microsoft.IdentityModel.Tokens.dll
+/Users/user/RiderProjects/BitRaceAPI/BitRaceAPI/bin/Debug/net8.0/System.IdentityModel.Tokens.Jwt.dll

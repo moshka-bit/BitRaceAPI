@@ -1,10 +1,13 @@
+using BitRaceAPI.CustomAttributes;
 using BitRaceAPI.Requests;
 using BitRaceAPI.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BitRaceAPI.Controllers;
 
-public class UserController
+[ApiController]
+[Route("api/[controller]")]
+public class UserController: ControllerBase
 {
     private readonly IUserService _userService;
     
@@ -27,6 +30,7 @@ public class UserController
     }
     [HttpGet]
     [Route("GetScoresByLevels")]
+    [RoleAuthorized([1])]
     public async Task<IActionResult> GetScoresByLevels([FromQuery]int userId)
     {
         return await _userService.GetScoresByLevels(userId);
@@ -34,6 +38,7 @@ public class UserController
     
     [HttpPut]
     [Route("PutScore")]
+    [RoleAuthorized([1])]
     public async Task<IActionResult> PutScore([FromQuery]int userId, [FromQuery]int levelId, [FromQuery]int score)
     {
         return await _userService.PutScore(userId,  levelId, score);
@@ -41,6 +46,7 @@ public class UserController
     
     [HttpGet]
     [Route("GetMoneyByUserId")]
+    [RoleAuthorized([1])]
     public async Task<IActionResult> GetMoneyByUserId([FromQuery] int userId)
     {
         return await _userService.GetMoneyByUserId(userId);
@@ -48,6 +54,7 @@ public class UserController
 
     [HttpPost]
     [Route("AddMoneyToUser")]
+    [RoleAuthorized([1])]
     public async Task<IActionResult> AddMoneyToUser([FromQuery] int userId, [FromQuery] int money)
     {
         return await _userService.AddMoneyToUser(userId, money);
@@ -55,6 +62,7 @@ public class UserController
 
     [HttpGet]
     [Route("GetAllSkinsAndEquippedByUserId")]
+    [RoleAuthorized([1])]
     public async Task<IActionResult> GetAllSkinsAndEquippedByUserId([FromQuery] int userId)
     {
         return await _userService.GetAllSkinsAndEquippedByUserId(userId);
@@ -62,6 +70,7 @@ public class UserController
 
     [HttpPost]
     [Route("BuySkin")]
+    [RoleAuthorized([1])]
     public async Task<IActionResult> BuySkin([FromQuery] int userId, [FromQuery] int skinId)
     {
         return await _userService.BuySkin(userId, skinId);
@@ -69,6 +78,7 @@ public class UserController
 
     [HttpPost]
     [Route("EquipSkin")]
+    [RoleAuthorized([1])]
     public async Task<IActionResult> EquipSkin([FromQuery] int userId, [FromQuery] int skinId)
     {
         return await _userService.EquipSkin(userId, skinId);

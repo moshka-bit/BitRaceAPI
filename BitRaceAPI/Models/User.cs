@@ -17,4 +17,9 @@ public class User
     
     public int? CarSkinId { get; set; }
     public CarSkin? CarSkin { get; set; }
+    
+    [Required]
+    [ForeignKey("Role")]
+    public int RoleId { get; set; }
+    public Role Role { get; set; }
 }
