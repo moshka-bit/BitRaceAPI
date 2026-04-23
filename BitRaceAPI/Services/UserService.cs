@@ -2,7 +2,6 @@ using BitRaceAPI.Requests;
 using BitRaceAPI.DatabaseContext;
 using BitRaceAPI.Interfaces;
 using BitRaceAPI.Models;
-using BitRaceAPI.UniversalMethods;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,12 +10,10 @@ namespace BitRaceAPI.Services;
 public class UserService : IUserService
 {
     private readonly ContextDb _context;
-    private readonly JwtGenerator _jwtGenerator;
 
-    public UserService(ContextDb context, JwtGenerator jwtGenerator)
+    public UserService(ContextDb context)
     {
         _context = context;
-        _jwtGenerator = jwtGenerator;
     }
 
     public async Task<IActionResult> RegistrationNewUserAsync(RegistringUser registringUser)
@@ -67,7 +64,6 @@ public class UserService : IUserService
             Password = registringUser.Password,
             Money = 0,
             CarSkinId = 1, // автоматически экипирован первый скин
-            RoleId = 1
         };
 
         await _context.Users.AddAsync(user);
@@ -109,25 +105,12 @@ public class UserService : IUserService
             });
         }
         
-        string token = _jwtGenerator.GenerateToken(new LoginPassword()
-        {
-            UserId = user.Id,
-            RoleId = user.RoleId
-        });
-
-        _context.Sessions.Add(new Session
-        {
-            Token = token,
-            UserId = user.Id
-        });
         
-        await _context.SaveChangesAsync();
 
         return new OkObjectResult(new
         {
             status = true,
-            userId = user.Id,
-            token
+            userId = user.Id
         });
     }
 

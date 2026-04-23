@@ -1,7 +1,6 @@
 using BitRaceAPI.DatabaseContext;
 using BitRaceAPI.Interfaces;
 using BitRaceAPI.Services;
-using BitRaceAPI.UniversalMethods;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +13,6 @@ builder.Services.AddDbContext<ContextDb>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddSingleton<JwtGenerator>();
 
 var app = builder.Build();
 
